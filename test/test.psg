@@ -1,0 +1,11 @@
+const PI = 3.14159265359
+
+var monpad = {
+    hello: 25,
+}
+
+fn hello() {
+    return 25
+}
+
+print(hello())
