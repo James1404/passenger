@@ -4,77 +4,21 @@
 
 #include <stdbool.h>
 
-typedef struct {
-    int position;
-    String input;
-} Parser;
+Chunk make_chunk() {
+    Chunk chunk = {};
+    return chunk;
+}
+void free_chunk(Chunk* chunk) {}
 
-Parser make_parser(String input) {
-    Parser parser = {};
-    parser.input = input;
-    parser.position = 0;
-    return parser;
+void write_opcode_chunk(Chunk* chunk, Opcode* opcode) {
+}
+void write_operand_chunk(Chunk* chunk, Value* operand) {
 }
 
-void free_parser(Parser* parser) {
+Opcode* decode_opcode(Chunk* chunk, int pos) {
+    return (Opcode*)&chunk->code[pos];
 }
 
-char current_parser(Parser* parser) {
-    return index_string(parser->input, parser->position);
+Value* decode_operand(Chunk* chunk, int pos) {
+    return (Value*)&chunk->code[pos];
 }
-
-void advance_parser(Parser* parser) {
-    parser->position++;
-}
-
-typedef enum {
-    Keyword_var,
-    Keyword_const,
-
-    Keyword_if,
-    Keyword_else,
-
-    Keyword_continue,
-    Keyword_break,
-
-    Keyword_return,
-
-    Keyword_Fn,
-} Keyword;
-
-static bool isLetter(char c) {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-}
-
-static bool isNumber(char c) {
-    return c >= '0' && c <= '9';
-}
-
-static bool isWhitespace(char c) {
-    switch(c) {
-        case ' ':
-        case '\t':
-        case '\n':
-        case '\r':
-            return true;
-        default:
-            return false;
-    }
-}
-
-static void consume_whitespace(Parser* parser) {
-    while(isWhitespace(current_parser(parser))) advance_parser(parser);
-}
-
-static void consume_identifier(Parser* parser, char expected, String error) {
-    int start = parser->position;
-    if(isLetter(current_parser(parser))) {
-        while(isLetter(current_parser(parser)) || isNumber(current_parser(parser))) advance_parser(parser);
-
-        String id = substring(parser->input, start, parser->position);
-
-        return;
-    }
-}
-
-void run_parser(Parser* parser);

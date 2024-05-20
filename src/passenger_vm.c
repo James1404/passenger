@@ -2,13 +2,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
-Chunk make_chunk() {
-    Chunk chunk = {};
-    return chunk;
-}
-void free_chunk(Chunk* chunk) {}
 
 ConstantsTable make_constants_table() {
     ConstantsTable table = {};
@@ -59,4 +52,7 @@ void free_vm(VM* vm) {
     free_constants_table(&vm->constants);
 }
 
-void run_vm(VM* vm) {}
+void run_vm(VM* vm) {
+    while(vm->ip < vm->chunk->size) {
+    }
+}

@@ -5,7 +5,6 @@
 #include "passenger_value.h"
 #include "passenger_chunk.h"
 
-
 typedef struct {
     int capacity, size;
     Value* data;
