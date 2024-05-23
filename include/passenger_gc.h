@@ -1,0 +1,4 @@
+#ifndef PASSENGER_GC_H
+#define PASSENGER_GC_H
+
+#endif//PASSENGER_GC_H

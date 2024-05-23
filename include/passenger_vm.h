@@ -4,24 +4,16 @@
 #include "passenger_opcodes.h"
 #include "passenger_value.h"
 #include "passenger_chunk.h"
-
-typedef struct {
-    int capacity, size;
-    Value* data;
-} ConstantsTable;
-
-ConstantsTable make_constants_table();
-void free_constants_table(ConstantsTable* table);
-int add_constants_table(ConstantsTable* table, Value* constant);
+#include "passenger_types.h"
 
 typedef struct {
     int ip;
     Chunk* chunk;
-    ConstantsTable constants;
+    DynamicArray constants;
 } VM;
 
-VM make_vm(Chunk* chunk);
-void free_vm(VM* vm);
-void run_vm(VM* vm);
+VM VM_make(Chunk* chunk);
+void VM_free(VM* vm);
+void VM_run(VM* vm);
 
 #endif//PASSENGER_VM_H

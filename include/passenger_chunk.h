@@ -1,21 +1,22 @@
 #ifndef PASSENGER_CHUNK_H
 #define PASSENGER_CHUNK_H
 
+#include "passenger_types.h"
 #include "passenger_opcodes.h"
 #include "passenger_value.h"
 
 typedef struct {
-    int capacity, size;
-    void* code;
+    i32 capacity, size;
+    u8* code;
 } Chunk;
 
-Chunk make_chunk();
-void free_chunk(Chunk* chunk);
+Chunk Chunk_make();
+void Chunk_free(Chunk* chunk);
 
-void write_opcode_chunk(Chunk* chunk, Opcode* opcode);
-void write_operand_chunk(Chunk* chunk, Value* operand);
+void Chunk_write_opcode(Chunk* chunk, Opcode* opcode);
+void Chunk_write_operand(Chunk* chunk, Value* operand);
 
-Opcode* decode_opcode(Chunk* chunk, int pos);
-Value* decode_operand(Chunk* chunk, int pos);
+Opcode* Chunk_decode_opcode(Chunk* chunk, i32 pos);
+Value* Chunk_decode_operand(Chunk* chunk, i32 pos);
 
 #endif//PASSENGER_CHUNK_H

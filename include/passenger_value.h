@@ -1,15 +1,15 @@
 #ifndef PASSENGER_VALUE_H
 #define PASSENGER_VALUE_H
 
-#include "stdbool.h"
+#include "passenger_types.h"
 
 #define VALUE(name) VALUE_##name
 
 typedef struct {
     union {
-        double number;
-        const char* string;
-        bool boolean;
+        f64 number;
+        String string;
+        b32 boolean;
     } ptr;
     enum {
         VALUE(NUMBER),

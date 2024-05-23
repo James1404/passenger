@@ -1,24 +1,25 @@
 #include "passenger_chunk.h"
 
-#include "passenger_string.h"
+#include "passenger_types.h"
 
-#include <stdbool.h>
-
-Chunk make_chunk() {
+Chunk Chunk_make() {
     Chunk chunk = {};
     return chunk;
 }
-void free_chunk(Chunk* chunk) {}
 
-void write_opcode_chunk(Chunk* chunk, Opcode* opcode) {
-}
-void write_operand_chunk(Chunk* chunk, Value* operand) {
+void Chunk_free(Chunk* chunk) {
 }
 
-Opcode* decode_opcode(Chunk* chunk, int pos) {
+void Chunk_write_opcode(Chunk* chunk, Opcode* opcode) {
+}
+
+void Chunk_write_operand(Chunk* chunk, Value* operand) {
+}
+
+Opcode* Chunk_decode_opcode(Chunk* chunk, i32 pos) {
     return (Opcode*)&chunk->code[pos];
 }
 
-Value* decode_operand(Chunk* chunk, int pos) {
+Value* Chunk_decode_operand(Chunk* chunk, i32 pos) {
     return (Value*)&chunk->code[pos];
 }
