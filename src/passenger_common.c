@@ -1,4 +1,4 @@
-#include "passenger_types.h"
+#include "passenger_common.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -40,14 +40,12 @@ const byte* String_get_raw(String str) {
 }
 
 DynamicArray DynamicArray_make(u64 element_size) {
-    DynamicArray r = {
+    return (DynamicArray) {
         .data = NULL,
         .length = 0,
         .capacity = 0,
         .element_size = element_size
     };
-
-    return r;
 }
 void DynamicArray_free(DynamicArray* array) {
     if(array->data) free(array->data);

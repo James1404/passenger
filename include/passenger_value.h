@@ -1,7 +1,7 @@
 #ifndef PASSENGER_VALUE_H
 #define PASSENGER_VALUE_H
 
-#include "passenger_types.h"
+#include "passenger_common.h"
 
 #define VALUE(name) VALUE_##name
 

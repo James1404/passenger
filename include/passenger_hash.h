@@ -1,12 +1,13 @@
 #ifndef PASSENGER_HASH_H
 #define PASSENGER_HASH_H
 
-#include "passenger_types.h"
+#include "passenger_common.h"
+#include "passenger_value.h"
 
-typedef u64 Hash;
+typedef u32 Hash;
 
 #define DEFINE_HASH_FN(T, p) Hash hash_##T(void* opaque)
-#define GET_HASH_FN(T) hash_##T
+#define GET_HASH_FN(T, v) hash_##T((void*)v)
 
 #define CAST_OPAQUE(v, T) (T*)v
 
@@ -16,19 +17,18 @@ DEFINE_HASH_FN(i32, value);
 typedef Hash (*HashFn)(void* opaque);
 
 typedef struct {
-    i32 capacity, size;
-    Hash* bucket;
+    String key;
+    Value value;
+} HashEntry;
 
-    i32 valuesize;
-
-    HashFn hash;
+typedef struct {
+    i32 allocated, length;
+    HashEntry* entries;
 } HashMap;
 
-HashMap make_hashmap(HashFn hash, i32 valuesize);
-void free_hashmap(HashMap* hashmap);
+HashMap HashMap_make();
+void HashMap_free(HashMap* hashmap);
 
-void hashmap_insert(HashMap* hashmap, void* key, void* value);
-
-#define HASHMAP(K, V) make_hash(GET_HASH_FN(T), sizeof(V));
+void HashMap_set(HashMap* hashmap, String key, Value value);
 
 #endif//PASSENGER_HASH_H

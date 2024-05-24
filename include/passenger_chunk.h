@@ -1,7 +1,7 @@
 #ifndef PASSENGER_CHUNK_H
 #define PASSENGER_CHUNK_H
 
-#include "passenger_types.h"
+#include "passenger_common.h"
 #include "passenger_opcodes.h"
 #include "passenger_value.h"
 

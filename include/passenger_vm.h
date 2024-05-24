@@ -4,7 +4,7 @@
 #include "passenger_opcodes.h"
 #include "passenger_value.h"
 #include "passenger_chunk.h"
-#include "passenger_types.h"
+#include "passenger_common.h"
 
 typedef struct {
     int ip;

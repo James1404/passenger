@@ -1,7 +1,7 @@
 #ifndef PASSENGER_LEX_H
 #define PASSENGER_LEX_H
 
-#include "passenger_types.h"
+#include "passenger_common.h"
 
 typedef enum {
     TOKEN_NONE,
@@ -23,9 +23,9 @@ typedef enum {
     TOKEN_DOT, TOKEN_COMMA,
 
     TOKEN_PLUS, TOKEN_MINUS, TOKEN_MULTIPLY, TOKEN_DIVIDE,
-
-    TOKEN_EOF,
 } TokenType;
+
+String TokenType_tostring(TokenType type);
 
 typedef struct {
     TokenType type;

@@ -8,15 +8,18 @@
 DEFINE_HASH_FN(String, opaque) {
     String* value = CAST_OPAQUE(opaque, String);
 
+    u32 b = 378551;
+    u32 a = 63689;
+
     Hash hash = 0;
 
-    i32 prime = 0x125fadb;
-
     for(i32 i = 0; i < value->length; i++) {
-        hash ^= (i32)value->data[i] + prime;
+        char c = value->data[i];
+        hash = hash * a + c;
+        a = a * b;
     }
 
-    return hash;
+   return hash;
 }
 
 DEFINE_HASH_FN(i32, opaque) {
@@ -29,30 +32,27 @@ DEFINE_HASH_FN(i32, opaque) {
 //
 
 static void allocate_hashmap(HashMap* hashmap) {
-    hashmap->bucket = malloc(hashmap->capacity * hashmap->valuesize);
+    hashmap->entries = malloc(hashmap->allocated * sizeof(Value));
 }
 
-HashMap make_hashmap(HashFn hash, i32 valuesize) {
-    HashMap r = {};
-
-    r.capacity = 100;
-    r.size = 0;
-    r.valuesize = valuesize;
-    r.hash = hash;
-
-    allocate_hashmap(&r);
-
-    return r;
+HashMap HashMap_make() {
+    return (HashMap) {
+        .entries = NULL,
+        .allocated = 100,
+        .length = 0,
+    };
 }
 
 void free_hashmap(HashMap* hashmap) {
+    free(hashmap->entries);
+    *hashmap = HashMap_make();
 }
 
-void hashmap_insert(HashMap* hashmap, void* key, void* value){
-    Hash hash = hashmap->hash(key) % hashmap->capacity;
-    hashmap->size++;
+void HashMap_set(HashMap* hashmap, String key, Value value) {
+    Hash hash = GET_HASH_FN(String, &key) % hashmap->allocated;
+    hashmap->length++;
 
-    if(hashmap->size >= hashmap->capacity) {
+    if(hashmap->length >= hashmap->allocated) {
         allocate_hashmap(hashmap);
     }
 }

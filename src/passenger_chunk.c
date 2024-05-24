@@ -1,7 +1,5 @@
 #include "passenger_chunk.h"
 
-#include "passenger_types.h"
-
 Chunk Chunk_make() {
     Chunk chunk = {};
     return chunk;
