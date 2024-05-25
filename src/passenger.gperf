@@ -1,0 +1,14 @@
+# Passenger reserved keywords
+
+var
+const
+
+true
+false
+
+return
+break
+continue
+fn
+for
+while

@@ -20,7 +20,7 @@ typedef unsigned char   ubyte;
 typedef float f32;
 typedef long double f64;
 
-typedef bool b32;
+typedef size_t usize;
 
 //
 // --- String ---
@@ -54,8 +54,6 @@ DynamicArray DynamicArray_make(u64 element_size);
 void DynamicArray_free(DynamicArray* array);
 
 void DynamicArray_push(DynamicArray* array, void* elem);
-
-void DynamicArray_realloc(DynamicArray* array);
 
 #define DynamicArray_at(T, array, i) (T*)((array).data + i)
 

@@ -9,7 +9,7 @@ typedef struct {
     union {
         f64 number;
         String string;
-        b32 boolean;
+        bool boolean;
     } ptr;
     enum {
         VALUE(NUMBER),
@@ -17,5 +17,9 @@ typedef struct {
         VALUE(BOOLEAN),
     } type;
 } Value;
+
+Value Value_make_number(f64 val);
+Value Value_make_string(String val);
+Value Value_make_bool(bool val);
 
 #endif//PASSENGER_VALUE_H
