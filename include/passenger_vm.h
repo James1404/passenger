@@ -7,14 +7,14 @@
 
 typedef struct {
     Value value;
-    i32 scope;
+    u64 scope;
 } Local;
 
 typedef struct {
-    i32 top, allocated;
+    u64 top, allocated;
     Local* data;
 
-    i32 scope;
+    u64 scope;
 } Stack;
 
 Stack Stack_make();
@@ -28,14 +28,8 @@ void Stack_inc(Stack* stack);
 void Stack_dec(Stack* stack);
 
 typedef struct {
-    i32 allocated, length;
-    Value* data;
-} Constants;
-
-typedef struct {
     int ip;
     Chunk* chunk;
-    DynamicArray constants;
     HashMap values;
 
     Stack stack;

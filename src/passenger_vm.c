@@ -67,7 +67,6 @@ VM VM_make(Chunk* chunk) {
     return (VM) {
         .ip = 0,
         .chunk = chunk,
-        .constants = DynamicArray_make(sizeof(Value)),
         .values = HashMap_make(),
         .stack = Stack_make(),
     };
@@ -75,7 +74,6 @@ VM VM_make(Chunk* chunk) {
 
 void VM_free(VM* vm) {
     Chunk_free(vm->chunk);
-    DynamicArray_free(&vm->constants);
     HashMap_free(&vm->values);
     Stack_free(&vm->stack);
 }

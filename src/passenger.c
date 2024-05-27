@@ -3,6 +3,8 @@
 #include "passenger_common.h"
 #include "passenger_lex.h"
 #include "passenger_error.h"
+#include "passenger_parser.h"
+#include "passenger_vm.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +22,17 @@ void Passenger_run(const char* src) {
         printf("%s \"%s\"\n", String_get_raw(ty), String_get_raw(t.text));
     }
 
+    Parser p = Parser_make(&l.tokens);
+
+    Parser_emit(&p);
+
+    VM vm = VM_make(&p.chunk);
+
+    VM_run(&vm);
+
+    // free resources
+    VM_free(&vm);
+    Parser_free(&p);
     Lexer_free(&l);
 }
 

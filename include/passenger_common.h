@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <string.h>
+#include <limits.h>
 
 typedef unsigned char       u8;
 typedef unsigned short      u16;
@@ -21,6 +22,16 @@ typedef float f32;
 typedef long double f64;
 
 typedef size_t usize;
+
+#define U8_MAX  UCHAR_MAX
+#define U16_MAX USHRT_MAX
+#define U32_MAX ULONG_MAX
+#define U64_MAX ULLONG_MAX
+
+#define I8_MAX  CHAR_MAX
+#define I16_MAX SHRT_MAX
+#define I32_MAX LONG_MAX
+#define I64_MAX LLONG_MAX
 
 //
 // --- String ---

@@ -21,7 +21,7 @@ String TokenType_tostring(TokenType type) {
 	
     case TOKEN_FN: return String_make("TOKEN_FN");
     case TOKEN_RETURN: return String_make("TOKEN_RETURN");
-    case TOKEN_IF: return String_make("TOKnnfEN_IF");
+    case TOKEN_IF: return String_make("TOKEN_IF");
     case TOKEN_ELSE: return String_make("TOKEN_ELSE");
     case TOKEN_CONTINUE: return String_make("TOKEN_CONTINUE");
     case TOKEN_BREAK: return String_make("TOKEN_BREAK");
@@ -83,7 +83,7 @@ typedef struct LLNode {
     struct LLNode* next;
 } LLNode;
 
-Token TokenArray_at(TokenArray* array, i32 idx) {
+Token TokenArray_at(TokenArray* array, u64 idx) {
     return array->data[idx];
 }
 
@@ -230,16 +230,5 @@ void Lexer_run(Lexer* lexer) {
 
             break;
         }
-    }
-}
-
-static void consume_identifier(Lexer* lexer, char expected, String error) {
-    int start = lexer->position;
-    if(isLetter(Lexer_current(lexer))) {
-        while(isLetter(Lexer_current(lexer)) || isNumber(Lexer_current(lexer))) Lexer_advance(lexer);
-
-        String id = String_substr(lexer->input, start, lexer->position);
-
-        return;
     }
 }

@@ -31,26 +31,26 @@ String TokenType_tostring(TokenType type);
 
 typedef struct {
     TokenType type;
-    i32 line, loc;
+    u64  line, loc;
     String text;
 } Token;
 
 typedef struct {
     Token* data;
-    i32 allocated, len;
+    u64 allocated, len;
 } TokenArray;
 
 TokenArray TokenArray_make();
 void TokenArray_free(TokenArray* array);
 
 void TokenArray_push(TokenArray* array, Token elem);
-Token TokenArray_at(TokenArray* array, i32 idx);
+Token TokenArray_at(TokenArray* array, u64 idx);
 
 typedef struct {
     String input;
     TokenArray tokens;
 
-    i32 line, start, position;
+    u64 line, start, position;
 } Lexer;
 
 Lexer Lexer_make(String input);
