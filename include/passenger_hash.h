@@ -16,6 +16,9 @@ DEFINE_HASH_FN(i32, value);
 
 typedef Hash (*HashFn)(void* opaque);
 
+//
+// --- Hash Map ---
+//
 typedef struct HashMapEntry {
     Hash hash;
 
@@ -35,5 +38,29 @@ void HashMap_free(HashMap* hashmap);
 
 void HashMap_set(HashMap* hashmap, String key, Value value);
 Value HashMap_get(HashMap* hashmap, String key);
+
+Value HashMap_exists(HashMap* hashmap, String key);
+
+//
+// --- Hash Set ---
+//
+
+typedef struct HashSetEntry {
+    Hash hash;
+    String key;
+
+    struct HashSetEntry* next;
+} HashSetEntry;
+
+typedef struct {
+    usize allocated, length;
+    HashSetEntry* buckets;
+} HashSet;
+
+HashSet HashSet_make();
+void HashSet_free(HashSet* hashset);
+
+void HashSet_add(HashSet* hashset, String key, Value value);
+bool HashSet_has(HashSet* hashset, String key);
 
 #endif//PASSENGER_HASH_H

@@ -6,17 +6,13 @@
 #include "passenger_value.h"
 
 typedef struct {
-    i32 capacity, size;
-    u8* code;
+    i32 allocated, length;
+    u8* data;
 } Chunk;
 
 Chunk Chunk_make();
 void Chunk_free(Chunk* chunk);
 
-void Chunk_write_opcode(Chunk* chunk, Opcode* opcode);
-void Chunk_write_operand(Chunk* chunk, Value* operand);
-
-Opcode* Chunk_decode_opcode(Chunk* chunk, i32 pos);
-Value* Chunk_decode_operand(Chunk* chunk, i32 pos);
+void Chunk_write_byte(Chunk* chunk, byte val);
 
 #endif//PASSENGER_CHUNK_H

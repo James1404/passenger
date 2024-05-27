@@ -60,8 +60,6 @@ static HashMapEntry* HashMap_find_entry(HashMap* hashmap, Hash hash) {
         entry = entry->next;
     }
 
-    if(entry->hash != hash) hashmap->length++;
-
     return entry;
 }
 
@@ -90,6 +88,7 @@ void HashMap_set(HashMap* hashmap, String key, Value value) {
     Hash hash = GET_HASH_FN(String, &key);
 
     HashMapEntry* entry = HashMap_find_entry(hashmap, hash);
+    if(entry->hash != hash) hashmap->length++;
 
     *entry = (HashMapEntry) {
         .hash = hash,
@@ -102,4 +101,74 @@ void HashMap_set(HashMap* hashmap, String key, Value value) {
 Value HashMap_get(HashMap* hashmap, String key) {
     Hash idx = GET_HASH_FN(String, &key) % hashmap->allocated;
     return hashmap->buckets[idx].value;
+}
+
+//
+// --- Hash Set ---
+//
+
+static void HashSet_realloc(HashSet* hashset) {
+    if(!hashset->buckets) {
+        hashset->buckets = calloc(hashset->allocated, sizeof(Value));
+        return;
+    }
+
+    hashset->buckets = realloc(hashset->buckets, hashset->allocated * sizeof(Value));
+}
+
+static f32 HashSet_loadfactor(HashSet* hashset) {
+    return (f32)hashset->length / (f32)hashset->allocated;
+}
+
+static HashSetEntry* HashSet_find_entry(HashSet* hashset, Hash hash) {
+    Hash idx = hash % hashset->allocated;
+
+    HashSetEntry* entry = hashset->buckets + idx;
+
+    while(entry->next) {
+        if(entry->hash == hash) break;
+        entry = entry->next;
+    }
+
+    return entry;
+}
+
+HashSet HashSet_make() {
+    return (HashSet) {
+        .buckets = NULL,
+        .allocated = 100,
+        .length = 0,
+    };
+}
+void HashSet_free(HashSet* hashset) {
+    if(hashset->buckets) free(hashset->buckets);
+    *hashset = HashSet_make();
+}
+
+void HashSet_add(HashSet* hashset, String key, Value value) {
+    if(!hashset->buckets) {
+        HashSet_realloc(hashset);
+    }
+
+    if(HashSet_loadfactor(hashset) >= MAX_LOADFACTOR) {
+        HashSet_realloc(hashset);
+    }
+
+    Hash hash = GET_HASH_FN(String, &key);
+
+    HashSetEntry* entry = HashSet_find_entry(hashset, hash);
+
+    *entry = (HashSetEntry) {
+        .hash = hash,
+        .key = key,
+        .next = NULL
+    };
+}
+
+bool HashSet_has(HashSet* hashset, String key) {
+    Hash hash = GET_HASH_FN(String, &key);
+
+    HashSetEntry* entry = HashSet_find_entry(hashset, hash);
+
+    return entry->hash == hash;
 }

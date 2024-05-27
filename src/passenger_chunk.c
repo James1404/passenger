@@ -1,23 +1,19 @@
 #include "passenger_chunk.h"
 
+#include <stdlib.h>
+
 Chunk Chunk_make() {
-    Chunk chunk = {};
-    return chunk;
+    return (Chunk) {
+        .allocated = 8,
+        .length = 0,
+        .data = NULL
+    };
 }
 
 void Chunk_free(Chunk* chunk) {
+    if(chunk->data) free(chunk->data);
+    *chunk = Chunk_make();
 }
 
-void Chunk_write_opcode(Chunk* chunk, Opcode* opcode) {
-}
-
-void Chunk_write_operand(Chunk* chunk, Value* operand) {
-}
-
-Opcode* Chunk_decode_opcode(Chunk* chunk, i32 pos) {
-    return (Opcode*)&chunk->code[pos];
-}
-
-Value* Chunk_decode_operand(Chunk* chunk, i32 pos) {
-    return (Value*)&chunk->code[pos];
+void Chunk_write_byte(Chunk* chunk, byte val) {
 }

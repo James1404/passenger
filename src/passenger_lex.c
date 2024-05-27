@@ -8,41 +8,41 @@
 
 String TokenType_tostring(TokenType type) {
     switch(type) {
-		case TOKEN_NONE: return String_make("TOKEN_NONE");
-		case TOKEN_VAR: return String_make("TOKEN_VAR");
-		case TOKEN_CONST: return String_make("TOKEN_CONST");
+    case TOKEN_NONE: return String_make("TOKEN_NONE");
+    case TOKEN_VAR: return String_make("TOKEN_VAR");
+    case TOKEN_CONST: return String_make("TOKEN_CONST");
+	
+    case TOKEN_NUMBER: return String_make("TOKEN_NUMBER");
+    case TOKEN_STRING: return String_make("TOKEN_STRING");
+    case TOKEN_IDENTIFIER: return String_make("TOKEN_IDENTIFIER");
+	
+    case TOKEN_TRUE: return String_make("TOKEN_TRUE");
+    case TOKEN_FALSE: return String_make("TOKEN_FALSE");
+	
+    case TOKEN_FN: return String_make("TOKEN_FN");
+    case TOKEN_RETURN: return String_make("TOKEN_RETURN");
+    case TOKEN_IF: return String_make("TOKnnfEN_IF");
+    case TOKEN_ELSE: return String_make("TOKEN_ELSE");
+    case TOKEN_CONTINUE: return String_make("TOKEN_CONTINUE");
+    case TOKEN_BREAK: return String_make("TOKEN_BREAK");
+    case TOKEN_FOR: return String_make("TOKEN_FOR");
+    case TOKEN_WHILE: return String_make("TOKEN_WHILE");
 
-		case TOKEN_NUMBER: return String_make("TOKEN_NUMBER");
-		case TOKEN_STRING: return String_make("TOKEN_STRING");
-		case TOKEN_IDENTIFIER: return String_make("TOKEN_IDENTIFIER");
+    case TOKEN_LPAREN: return String_make("TOKEN_LPAREN");
+    case TOKEN_RPAREN: return String_make("TOKEN_RPAREN");
+    case TOKEN_LBRACE: return String_make("TOKEN_LBRACE");
+    case TOKEN_RBRACE: return String_make("TOKEN_RBRACE");
+    case TOKEN_LBRACKET: return String_make("TOKEN_LBRACKET");
+    case TOKEN_RBRACKET: return String_make("TOKEN_RBRACKET");
+    case TOKEN_SEMICOLON: return String_make("TOKEN_SEMICOLON");
+    case TOKEN_COLON: return String_make("TOKEN_COLON");
+    case TOKEN_DOT: return String_make("TOKEN_DOT");
+    case TOKEN_COMMA: return String_make("TOKEN_COMMA");
 
-		case TOKEN_TRUE: return String_make("TOKEN_TRUE");
-		case TOKEN_FALSE: return String_make("TOKEN_FALSE");
-
-		case TOKEN_FN: return String_make("TOKEN_FN");
-		case TOKEN_RETURN: return String_make("TOKEN_RETURN");
-		case TOKEN_IF: return String_make("TOKEN_IF");
-		case TOKEN_ELSE: return String_make("TOKEN_ELSE");
-		case TOKEN_CONTINUE: return String_make("TOKEN_CONTINUE");
-		case TOKEN_BREAK: return String_make("TOKEN_BREAK");
-		case TOKEN_FOR: return String_make("TOKEN_FOR");
-		case TOKEN_WHILE: return String_make("TOKEN_WHILE");
-
-		case TOKEN_LPAREN: return String_make("TOKEN_LPAREN");
-		case TOKEN_RPAREN: return String_make("TOKEN_RPAREN");
-		case TOKEN_LBRACE: return String_make("TOKEN_LBRACE");
-		case TOKEN_RBRACE: return String_make("TOKEN_RBRACE");
-		case TOKEN_LBRACKET: return String_make("TOKEN_LBRACKET");
-		case TOKEN_RBRACKET: return String_make("TOKEN_RBRACKET");
-		case TOKEN_SEMICOLON: return String_make("TOKEN_SEMICOLON");
-		case TOKEN_COLON: return String_make("TOKEN_COLON");
-		case TOKEN_DOT: return String_make("TOKEN_DOT");
-		case TOKEN_COMMA: return String_make("TOKEN_COMMA");
-
-		case TOKEN_PLUS: return String_make("TOKEN_PLUS");
-		case TOKEN_MINUS: return String_make("TOKEN_MINUS");
-		case TOKEN_MULTIPLY: return String_make("TOKEN_MULTIPLY");
-		case TOKEN_DIVIDE: return String_make("TOKEN_DIVIDE");
+    case TOKEN_PLUS: return String_make("TOKEN_PLUS");
+    case TOKEN_MINUS: return String_make("TOKEN_MINUS");
+    case TOKEN_MULTIPLY: return String_make("TOKEN_MULTIPLY");
+    case TOKEN_DIVIDE: return String_make("TOKEN_DIVIDE");
     }
 }
 
@@ -53,7 +53,7 @@ TokenArray TokenArray_make() {
     return (TokenArray) {
         .data = NULL,
         .allocated = 0,
-        .len = 0
+	.len = 0
     };
 }
 
@@ -76,6 +76,12 @@ void TokenArray_push(TokenArray* array, Token elem) {
         array->data = realloc(array->data, sizeof(Token)*array->allocated);
     }
 }
+
+typedef struct LLNode {
+    void* data;
+    usize datasize;
+    struct LLNode* next;
+} LLNode;
 
 Token TokenArray_at(TokenArray* array, i32 idx) {
     return array->data[idx];
@@ -114,6 +120,17 @@ char Lexer_current(Lexer* lexer) {
 
 void Lexer_advance(Lexer* lexer) {
     lexer->position++;
+}
+
+void Token_make_identifier(Lexer* lexer) {
+    Token t = {};
+
+    t.text = String_substr(lexer->input, lexer->start, lexer->position - lexer->start);
+    t.line = lexer->line;
+    t.loc = lexer->position;
+    t.type = Passenger_GetKeyword(t);
+
+    TokenArray_push(&lexer->tokens, t);
 }
 
 void Token_make(Lexer* lexer, TokenType type) {
@@ -197,7 +214,7 @@ void Lexer_run(Lexer* lexer) {
                     Lexer_advance(lexer);
                 }
 
-                Token_make(lexer, TOKEN_IDENTIFIER);
+                Token_make_identifier(lexer);
                 continue;
             }
 

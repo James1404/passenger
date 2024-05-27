@@ -1,14 +1,38 @@
+%{
+#include "passenger_keywords.h"
+#include "passenger_lex.h"
+%}
+
+%struct-type
+%enum
+%compare-strncmp
+%define lookup-function-name Passenger_KeywordsLookup
+%define hash-function-name Passenger_KeywordsHash
+
+struct Keyword {
+    const char* name;
+    int tt;
+}
+
+%%
 # Passenger reserved keywords
+var, TOKEN_VAR
+const, TOKEN_CONST
+true, TOKEN_TRUE
+false, TOKEN_FALSE
+return, TOKEN_RETURN
+break, TOKEN_BREAK
+continue, TOKEN_CONTINUE
+fn, TOKEN_FN
+for, TOKEN_FOR
+while, TOKEN_WHILE
+%%
+TokenType Passenger_GetKeyword(Token t) {
+    struct Keyword* k = Passenger_KeywordsLookup(t.text.data, t.text.length);
 
-var
-const
+    if(!k) {
+        return TOKEN_IDENTIFIER;
+    }
 
-true
-false
-
-return
-break
-continue
-fn
-for
-while
+    return (TokenType)k->tt;
+}

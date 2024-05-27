@@ -1,28 +1,16 @@
 #include "passenger_value.h"
 
-Value Value_make_number(f64 val) {
-    Value r = {};
-
-    r.ptr.number = val;
-    r.type = VALUE_NUMBER;
-
-    return r;
+void Value_set_number(Value* value, f64 v) {
+    value->ptr.number = v;
+    value->type = VALUE_NUMBER;
 }
 
-Value Value_make_string(String val) {
-    Value r = {};
-
-    r.ptr.string = val;
-    r.type = VALUE_STRING;
-
-    return r;
+void Value_set_string(Value* value, String v) {
+    value->ptr.string = v;
+    value->type = VALUE_STRING;
 }
 
-Value Value_make_bool(bool val) {
-    Value r = {};
-
-    r.ptr.boolean = val;
-    r.type = VALUE_BOOLEAN;
-
-    return r;
+void Value_set_bool(Value* value, bool v) {
+    value->ptr.boolean = v;
+    value->type = VALUE_BOOLEAN;
 }

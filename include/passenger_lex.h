@@ -2,6 +2,7 @@
 #define PASSENGER_LEX_H
 
 #include "passenger_common.h"
+#include "passenger_hash.h"
 
 typedef enum {
     TOKEN_NONE,

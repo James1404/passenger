@@ -1,0 +1,3 @@
+[submodule "deps/cmph-git"]
+	path = deps/cmph-git
+	url = https://git.code.sf.net/p/cmph/git
