@@ -6,8 +6,7 @@
 // The source file is generated using gperf.
 //
 // --- COMMAND ---
-// cd src/
-// gperf passenger.gperf > passenger_keywords.c
+// gperf src/passenger_keywords.gperf > src/passenger_keywords.c
 // --- COMMAND ---
 
 
