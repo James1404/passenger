@@ -29,3 +29,9 @@ target_include_directories(passenger PUBLIC
 target_include_directories(passenger_exe PUBLIC
     ${passenger_CURRENT_DIR}/include
 )
+
+add_custom_command(
+    TARGET passenger_exe POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${passenger_CURRENT_DIR}/test
+            ${CMAKE_CURRENT_BINARY_DIR}/test)

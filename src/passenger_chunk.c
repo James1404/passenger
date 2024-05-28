@@ -3,22 +3,22 @@
 #include <stdlib.h>
 
 //
-// --- ConstantsTable ---
+// --- LiteralTable ---
 //
 
-ConstantsTable ConstantsTable_make() {
-    return (ConstantsTable) {
+LiteralTable LiteralTable_make() {
+    return (LiteralTable) {
         .allocated = 8,
         .length = 0,
         .data = NULL,
     };
 }
-void ConstantsTable_free(ConstantsTable* table) {
+void LiteralTable_free(LiteralTable* table) {
     if(table->data) free(table->data);
-    *table = ConstantsTable_make();
+    *table = LiteralTable_make();
 }
 
-u64 ConstantsTable_push(ConstantsTable* table, Value constant) {
+u64 LiteralTable_push(LiteralTable* table, Value constant) {
     if(table->allocated == 0 || !table->data) {
         table->allocated = 8;
         table->data = malloc(table->allocated * sizeof(Value));
@@ -36,7 +36,7 @@ u64 ConstantsTable_push(ConstantsTable* table, Value constant) {
     return index;
 }
 
-Value ConstantsTable_get(ConstantsTable* table, u64 index) {
+Value LiteralTable_get(LiteralTable* table, u64 index) {
     return table->data[index];
 }
 
@@ -50,7 +50,7 @@ Chunk Chunk_make() {
         .length = 0,
         .data = NULL,
 
-        .constants = ConstantsTable_make(),
+        .literals = LiteralTable_make(),
     };
 }
 
@@ -58,7 +58,7 @@ void Chunk_free(Chunk* chunk) {
     if(chunk->data) free(chunk->data);
     *chunk = Chunk_make();
 
-    ConstantsTable_free(&chunk->constants);
+    LiteralTable_free(&chunk->literals);
 }
 
 void Chunk_push_byte(Chunk* chunk, byte val) {
@@ -82,28 +82,28 @@ void Chunk_push_opcode(Chunk* chunk, Opcode op) {
 }
 
 void Chunk_push_value(Chunk* chunk, Value val) {
-    u64 index = ConstantsTable_push(&chunk->constants, val);
+    u64 index = LiteralTable_push(&chunk->literals, val);
 
     u8* index_arr = (u8*)index;
 
     if(index <= U8_MAX) {
-        Chunk_push_opcode(chunk, LOAD_CONST_CHAR);
+        Chunk_push_opcode(chunk, LOAD_LITERAL_CHAR);
         Chunk_push_byte(chunk, index_arr[0]);
     }
     else if(index <= U16_MAX) {
-        Chunk_push_opcode(chunk, LOAD_CONST_SHORT);
+        Chunk_push_opcode(chunk, LOAD_LITERAL_SHORT);
         Chunk_push_byte(chunk, index_arr[0]);
         Chunk_push_byte(chunk, index_arr[1]);
     }
     else if(index <= U32_MAX) {
-        Chunk_push_opcode(chunk, LOAD_CONST_LONG);
+        Chunk_push_opcode(chunk, LOAD_LITERAL_LONG);
         Chunk_push_byte(chunk, index_arr[0]);
         Chunk_push_byte(chunk, index_arr[1]);
         Chunk_push_byte(chunk, index_arr[2]);
         Chunk_push_byte(chunk, index_arr[3]);
     }
     else if(index <= U64_MAX) {
-        Chunk_push_opcode(chunk, LOAD_CONST_LONGLONG);
+        Chunk_push_opcode(chunk, LOAD_LITERAL_LONGLONG);
         Chunk_push_byte(chunk, index_arr[0]);
         Chunk_push_byte(chunk, index_arr[1]);
         Chunk_push_byte(chunk, index_arr[2]);

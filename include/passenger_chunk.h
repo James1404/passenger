@@ -8,19 +8,19 @@
 typedef struct {
     u64 allocated, length;
     Value* data;
-} ConstantsTable;
+} LiteralTable;
 
-ConstantsTable ConstantsTable_make();
-void ConstantsTable_free(ConstantsTable* table);
+LiteralTable LiteralTable_make();
+void LiteralTable_free(LiteralTable* table);
 
-u64 ConstantsTable_push(ConstantsTable* table, Value constant);
-Value ConstantsTable_get(ConstantsTable* table, u64 index);
+u64 LiteralTable_push(LiteralTable* table, Value constant);
+Value LiteralTable_get(LiteralTable* table, u64 index);
 
 typedef struct {
     u64 allocated, length;
     u8* data;
 
-    ConstantsTable constants;
+    LiteralTable literals;
 } Chunk;
 
 Chunk Chunk_make();

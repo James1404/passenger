@@ -7,6 +7,7 @@
 
 typedef struct {
     Value value;
+    bool constant;
     u64 scope;
 } Local;
 
@@ -15,23 +16,48 @@ typedef struct {
     Local* data;
 
     u64 scope;
+} VariableTable;
+
+VariableTable VariableTable_make();
+void VariableTable_free(VariableTable* table);
+
+Local VariableTable_top(VariableTable* table);
+void VariableTable_push(VariableTable* table, Value elem, bool constant);
+void VariableTable_pop(VariableTable* table);
+
+void VariableTable_inc(VariableTable* table);
+void VariableTable_dec(VariableTable* table);
+
+typedef struct {
+    u64 top, allocated;
+    Value* data;
 } Stack;
 
 Stack Stack_make();
 void Stack_free(Stack* stack);
 
-Local Stack_top(Stack* stack);
-void Stack_push(Stack* stack, Value elem);
+Value Stack_top(Stack* stack);
+void Stack_push(Stack* stack, Value value);
 void Stack_pop(Stack* stack);
 
-void Stack_inc(Stack* stack);
-void Stack_dec(Stack* stack);
+typedef struct {
+    u64 top, allocated;
+    u64* data;
+} CallStack;
+
+CallStack CallStack_make();
+void CallStack_free(CallStack* stack);
+
+u64 CallStack_top(CallStack* stack);
+void CallStack_push(CallStack* stack, u64 loc);
+void CallStack_pop(CallStack* stack);
 
 typedef struct {
     int ip;
     Chunk* chunk;
     HashMap values;
 
+    VariableTable variables;
     Stack stack;
 } VM;
 

@@ -5,6 +5,62 @@
 #include <stdlib.h>
 
 //
+// --- Variable Table ---
+//
+
+VariableTable VariableTable_make() {
+    return (VariableTable) {
+        .top = 0,
+        .allocated = 8,
+        .data = NULL,
+        .scope = 0,
+    };
+}
+
+void VariableTable_free(VariableTable* table) {
+    if(table->data) free(table->data);
+    *table = VariableTable_make();
+}
+
+Local VariableTable_top(VariableTable* table) {
+    return table->data[table->top];
+}
+
+void VariableTable_push(VariableTable* table, Value elem, bool constant) {
+    if(!table->data) {
+        table->data = malloc(sizeof(Local) * table->allocated);
+    }
+
+    table->data[table->top] = (Local) {
+        .value = elem,
+        .constant = constant,
+        .scope = table->scope,
+    };
+
+    table->top++;
+
+    if(table->top >= table->allocated) {
+        table->allocated *= 2;
+        table->data = realloc(table->data, sizeof(Local) * table->allocated);
+    }
+}
+
+void VariableTable_pop(VariableTable* table) {
+    table->top--;
+}
+
+void VariableTable_inc(VariableTable* table) {
+    table->scope++;
+}
+void VariableTable_dec(VariableTable* table) {
+    table->scope--;
+
+    while(VariableTable_top(table).scope > table->scope) {
+        VariableTable_pop(table);
+    }
+}
+
+//
 // --- Stack ---
 //
 
@@ -13,7 +69,6 @@ Stack Stack_make() {
         .top = 0,
         .allocated = 8,
         .data = NULL,
-        .scope = 0,
     };
 }
 
@@ -22,20 +77,16 @@ void Stack_free(Stack* stack) {
     *stack = Stack_make();
 }
 
-Local Stack_top(Stack* stack) {
+Value Stack_top(Stack* stack) {
     return stack->data[stack->top];
 }
 
-void Stack_push(Stack* stack, Value elem) {
+void Stack_push(Stack* stack, Value value) {
     if(!stack->data) {
         stack->data = malloc(sizeof(Local) * stack->allocated);
     }
 
-    stack->data[stack->top] = (Local) {
-        .scope = stack->scope,
-        .value = elem,
-    };
-
+    stack->data[stack->top] = value;
     stack->top++;
 
     if(stack->top >= stack->allocated) {
@@ -48,15 +99,43 @@ void Stack_pop(Stack* stack) {
     stack->top--;
 }
 
-void Stack_inc(Stack* stack) {
-    stack->scope++;
-}
-void Stack_dec(Stack* stack) {
-    stack->scope--;
+//
+// --- Call Stack ---
+//
 
-    while(Stack_top(stack).scope > stack->scope) {
-        Stack_pop(stack);
+CallStack CallStack_make() {
+    return (CallStack) {
+        .top = 0,
+        .allocated = 8,
+        .data = NULL,
+    };
+}
+
+void CallStack_free(CallStack* stack) {
+    if(stack->data) free(stack->data);
+    *stack = CallStack_make();
+}
+
+u64 CallStack_top(CallStack* stack) {
+    return stack->data[stack->top];
+}
+
+void CallStack_push(CallStack* stack, u64 loc) {
+    if(!stack->data) {
+        stack->data = malloc(sizeof(Local) * stack->allocated);
     }
+
+    stack->data[stack->top] = loc;
+    stack->top++;
+
+    if(stack->top >= stack->allocated) {
+        stack->allocated *= 2;
+        stack->data = realloc(stack->data, sizeof(Local) * stack->allocated);
+    }
+}
+
+void CallStack_pop(CallStack* stack) {
+    stack->top--;
 }
 
 //
@@ -68,6 +147,7 @@ VM VM_make(Chunk* chunk) {
         .ip = 0,
         .chunk = chunk,
         .values = HashMap_make(),
+        .variables = VariableTable_make(),
         .stack = Stack_make(),
     };
 }
@@ -75,6 +155,7 @@ VM VM_make(Chunk* chunk) {
 void VM_free(VM* vm) {
     Chunk_free(vm->chunk);
     HashMap_free(&vm->values);
+    VariableTable_free(&vm->variables);
     Stack_free(&vm->stack);
 }
 
@@ -85,13 +166,13 @@ void VM_run(VM* vm) {
         vm->ip++;
 
         switch(op) {
-            case LOAD_CONST_CHAR:
-            case LOAD_CONST_SHORT:
-            case LOAD_CONST_LONG:
-            case LOAD_CONST_LONGLONG:
+            case LOAD_LITERAL_CHAR:
+            case LOAD_LITERAL_SHORT:
+            case LOAD_LITERAL_LONG:
+            case LOAD_LITERAL_LONGLONG:
 
-            case JUMP_REL:
-            case JUMP_ABS: {
+            case JUMP_IF_TRUE:
+            case JUMP_IF_FALSE: {
                 break;
             }
 
@@ -104,6 +185,75 @@ void VM_run(VM* vm) {
                 Stack_pop(&vm->stack);
                 break;
             }
+
+            case STORE: { break; }
+            case LOAD: { break; }
+
+            case MAKE_CONST: { break; }
+            
+            case ADD: {
+                Value l = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+                Value r = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+
+                Value result = {};
+                Value_set_number(&result, l.ptr.number + r.ptr.number);
+                Stack_push(&vm->stack, result);
+                break;
+            }
+            case SUB: {
+                Value l = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+                Value r = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+
+                Value result = {};
+                Value_set_number(&result, l.ptr.number - r.ptr.number);
+                Stack_push(&vm->stack, result);
+                break;
+            }
+            case MUL: {
+                Value l = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+                Value r = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+
+                Value result = {};
+                Value_set_number(&result, l.ptr.number * r.ptr.number);
+                Stack_push(&vm->stack, result);
+                break;
+            }
+            case DIV: {
+                Value l = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+                Value r = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+
+                Value result = {};
+                Value_set_number(&result, l.ptr.number / r.ptr.number);
+                Stack_push(&vm->stack, result);
+                break;
+            }
+
+            case LESS: {
+                Value l = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+                Value r = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+
+                Value result = {};
+                Value_set_bool(&result, l.ptr.number < r.ptr.number);
+                Stack_push(&vm->stack, result);
+
+                break;
+            }
+            case GREATER: {
+                Value l = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+                Value r = Stack_top(&vm->stack); Stack_pop(&vm->stack);
+
+                Value result = {};
+                Value_set_bool(&result, l.ptr.number > r.ptr.number);
+                Stack_push(&vm->stack, result);
+
+                break;
+            }
+
+            case EQ: { break; }
+            case NEQ: { break; }
+            case LEQ: { break; }
+            case GEQ: { break; }
+
         }
     }
 }

@@ -8,41 +8,9 @@
 
 String TokenType_tostring(TokenType type) {
     switch(type) {
-    case TOKEN_NONE: return String_make("TOKEN_NONE");
-    case TOKEN_VAR: return String_make("TOKEN_VAR");
-    case TOKEN_CONST: return String_make("TOKEN_CONST");
-	
-    case TOKEN_NUMBER: return String_make("TOKEN_NUMBER");
-    case TOKEN_STRING: return String_make("TOKEN_STRING");
-    case TOKEN_IDENTIFIER: return String_make("TOKEN_IDENTIFIER");
-	
-    case TOKEN_TRUE: return String_make("TOKEN_TRUE");
-    case TOKEN_FALSE: return String_make("TOKEN_FALSE");
-	
-    case TOKEN_FN: return String_make("TOKEN_FN");
-    case TOKEN_RETURN: return String_make("TOKEN_RETURN");
-    case TOKEN_IF: return String_make("TOKEN_IF");
-    case TOKEN_ELSE: return String_make("TOKEN_ELSE");
-    case TOKEN_CONTINUE: return String_make("TOKEN_CONTINUE");
-    case TOKEN_BREAK: return String_make("TOKEN_BREAK");
-    case TOKEN_FOR: return String_make("TOKEN_FOR");
-    case TOKEN_WHILE: return String_make("TOKEN_WHILE");
-
-    case TOKEN_LPAREN: return String_make("TOKEN_LPAREN");
-    case TOKEN_RPAREN: return String_make("TOKEN_RPAREN");
-    case TOKEN_LBRACE: return String_make("TOKEN_LBRACE");
-    case TOKEN_RBRACE: return String_make("TOKEN_RBRACE");
-    case TOKEN_LBRACKET: return String_make("TOKEN_LBRACKET");
-    case TOKEN_RBRACKET: return String_make("TOKEN_RBRACKET");
-    case TOKEN_SEMICOLON: return String_make("TOKEN_SEMICOLON");
-    case TOKEN_COLON: return String_make("TOKEN_COLON");
-    case TOKEN_DOT: return String_make("TOKEN_DOT");
-    case TOKEN_COMMA: return String_make("TOKEN_COMMA");
-
-    case TOKEN_PLUS: return String_make("TOKEN_PLUS");
-    case TOKEN_MINUS: return String_make("TOKEN_MINUS");
-    case TOKEN_MULTIPLY: return String_make("TOKEN_MULTIPLY");
-    case TOKEN_DIVIDE: return String_make("TOKEN_DIVIDE");
+#define DEFINE_TOSTRING(x) case x: return String_make(#x);
+        FOR_TOKENS(DEFINE_TOSTRING)
+#undef DEFINE_TOSTRING
     }
 }
 
@@ -160,6 +128,16 @@ static bool isWhitespace(char c) {
     }
 }
 
+static void Token_match(Lexer* lexer, char match, TokenType t, TokenType f) {
+    if(Lexer_current(lexer) == match) {
+        Lexer_advance(lexer);
+        Token_make(lexer, t);
+    }
+    else {
+        Token_make(lexer, f);
+    }
+}
+
 void Lexer_run(Lexer* lexer) {
     while(lexer->position < lexer->input.length) {
         char c = Lexer_current(lexer);
@@ -168,10 +146,17 @@ void Lexer_run(Lexer* lexer) {
         Lexer_advance(lexer);
 
         switch(c) {
-        case '+': Token_make(lexer, TOKEN_PLUS); break;
-        case '-': Token_make(lexer, TOKEN_MINUS); break;
-        case '/': Token_make(lexer, TOKEN_DIVIDE); break;
-        case '*': Token_make(lexer, TOKEN_MULTIPLY); break;
+        case '+': Token_match(lexer, '=', TOKEN_PLUSEQUAL, TOKEN_PLUS); break;
+        case '-': Token_match(lexer, '=', TOKEN_MINUSEQUAL, TOKEN_MINUS); break;
+        case '/': Token_match(lexer, '=', TOKEN_DIVIDEEQUAL, TOKEN_DIVIDE); break;
+        case '*': Token_match(lexer, '=', TOKEN_MULTIPLYEQUAL, TOKEN_MULTIPLY); break;
+
+        case '<': Token_match(lexer, '=', TOKEN_LESSEQUAL, TOKEN_LESS); break;
+        case '>': Token_match(lexer, '=', TOKEN_GREATEREQUAL, TOKEN_GREATER); break;
+
+        case '!': Token_match(lexer, '=', TOKEN_NOTEQUAL, TOKEN_NOT); break;
+
+        case '=': Token_match(lexer, '=', TOKEN_EQUALEQUAL, TOKEN_EQUAL); break;
 
         case ':': Token_make(lexer, TOKEN_COLON); break;
         case ';': Token_make(lexer, TOKEN_SEMICOLON); break;

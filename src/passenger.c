@@ -10,8 +10,6 @@
 #include <stdlib.h>
 
 void Passenger_run(const char* src) {
-    printf("Input: \"%s\"\n", src);
-
     Lexer l = Lexer_make(String_make(src));
     Lexer_run(&l);
 
@@ -45,7 +43,7 @@ void Passenger_run_file(const char* path) {
     }
 
     fseek(file, 0, SEEK_END);
-    long length = ftell(file);
+    u64 length = ftell(file);
 
     fseek(file, 0, SEEK_SET);
     char* buffer = malloc(length);
