@@ -13,16 +13,22 @@ void Passenger_run(const char* src) {
     Lexer l = Lexer_make(String_make(src));
     Lexer_run(&l);
 
+#if 0
     printf("--- Output ---\n");
     for(i32 i = 0; i < l.tokens.len; i++) {
         Token t = TokenArray_at(&l.tokens, i);
         String ty = TokenType_tostring(t.type);
         printf("%s \"%s\"\n", String_get_raw(ty), String_get_raw(t.text));
     }
+#endif
 
     Parser p = Parser_make(&l.tokens);
 
     Parser_emit(&p);
+
+    for(i32 i = 0; i < p.chunk.length; i++) 
+    {
+    }
 
     VM vm = VM_make(&p.chunk);
 

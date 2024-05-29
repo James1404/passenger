@@ -21,7 +21,7 @@ TokenArray TokenArray_make() {
     return (TokenArray) {
         .data = NULL,
         .allocated = 0,
-	.len = 0
+        .len = 0
     };
 }
 

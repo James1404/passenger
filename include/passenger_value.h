@@ -20,4 +20,8 @@ void Value_set_number(Value* value, f64 v);
 void Value_set_string(Value* value, String v);
 void Value_set_bool(Value* value, bool v);
 
+Value Value_from_number(f64 v);
+Value Value_from_string(String v);
+Value Value_from_bool(bool v);
+
 #endif//PASSENGER_VALUE_H
